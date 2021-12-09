@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FanActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="50dp">
+
+        <LinearLayout
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="100dp">
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:srcCompat="@drawable/fengshan2"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteX="-2dp"
+                tools:layout_editor_absoluteY="556dp"
+                />
+
+            <Switch
+                android:id="@+id/fan_one"
+                android:layout_width="164dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:text="风扇一"
+                tools:ignore="MissingConstraints"
+
+                tools:layout_editor_absoluteX="170dp"
+                tools:layout_editor_absoluteY="100dp"
+                android:gravity="center"
+                android:textOff="关"
+                android:textOn="开"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints"
+            android:layout_marginTop="100dp">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:srcCompat="@drawable/fengshan2"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteX="-3dp"
+                tools:layout_editor_absoluteY="66dp" />
+            <Switch
+                android:id="@+id/fan_two"
+                android:layout_width="164dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:text="风扇二"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteX="170dp"
+                tools:layout_editor_absoluteY="100dp"
+                android:gravity="center"
+                android:textOff="关"
+                android:textOn="开"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints"
+            android:layout_marginTop="100dp">
+
+            <ImageView
+                android:id="@+id/imageView4"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:srcCompat="@drawable/fengshan2"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteX="-2dp"
+                tools:layout_editor_absoluteY="315dp"
+                />
+            <Switch
+                android:id="@+id/fan_three"
+                android:layout_width="164dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:text="风扇三"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteX="170dp"
+                tools:layout_editor_absoluteY="100dp"
+                android:gravity="center"
+                android:textOff="关"
+                android:textOn="开"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

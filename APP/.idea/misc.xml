@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/All Project/IOT/Successful/app/src/main/res/drawable/bg_username.xml" value="0.275" />
+        <entry key="..\:/All Project/IOT/Successful/app/src/main/res/layout/activity_function.xml" value="0.264" />
+        <entry key="..\:/All Project/IOT/Successful/app/src/main/res/layout/activity_main.xml" value="0.1721014492753623" />
+        <entry key="..\:/a学会资料/大赛项目/A个人项目/智慧养殖/PIGHome/app/src/main/res/drawable/ic_baseline_wb_incandescent_24.xml" value="0.1609375" />
+        <entry key="..\:/a学会资料/大赛项目/A个人项目/智慧养殖/PIGHome/app/src/main/res/layout/activity_fan.xml" value="0.264" />
+        <entry key="..\:/a学会资料/大赛项目/A个人项目/智慧养殖/PIGHome/app/src/main/res/layout/activity_function.xml" value="0.14583333333333334" />
+        <entry key="..\:/a学会资料/大赛项目/A个人项目/智慧养殖/PIGHome/app/src/main/res/layout/activity_heat.xml" value="0.1897644927536232" />
+        <entry key="..\:/a学会资料/大赛项目/A个人项目/智慧养殖/PIGHome/app/src/main/res/layout/activity_lights_control.xml" value="0.21467391304347827" />
+        <entry key="..\:/a学会资料/大赛项目/A个人项目/智慧养殖/PIGHome/app/src/main/res/layout/activity_main.xml" value="0.1897644927536232" />
+        <entry key="..\:/a学会资料/大赛项目/A个人项目/智慧养殖/PIGHome/app/src/main/res/layout/activity_sun_shade.xml" value="0.4" />
+        <entry key="..\:/a学会资料/大赛项目/A个人项目/智慧养殖/PIGHome/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.275" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
