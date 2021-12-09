@@ -1,0 +1,205 @@
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+#include <WiFiManager.h>  
+#include <Ticker.h> 
+#include<dht11.h>
+#include <Wire.h>
+#include<math.h>
+
+/*定义WiFi配网信息*/
+#define WiFiPassword 123456789
+
+/* 设置mqtt服务器信息*/
+const char* mqttServer = "lbsmqtt.airm2m.com";
+const int mqttPort = 1884;
+
+/*重要变量定义*/ 
+Ticker ticker;
+WiFiClient wifiClient;
+PubSubClient mqttClient(wifiClient);
+
+int count;                  //Ticker计数变量
+
+/*定义重要引脚*/
+#define pinRelay  4     //继电器引脚
+#define gasInPin  13    //数字输入引脚
+#define dhtPin    16    //dht11引脚
+#define BH1750_SDA 14    //光照传感器数据引脚
+#define BH1750_SCL 12    //光照传感器控制引脚
+
+/*光照传感器相关定义*/
+int BH1750address = 0x23;//BH1750 I2C地址
+byte buff[2];
+
+/*读取信息暂存变量*/
+int    gasValue = 0;        //有害气体值
+dht11 *dht = new dht11();   //温湿度变量
+double lightIntensity;      //光照强度
+
+void connectMQTTserver();
+
+void setup()
+{
+    /*设置波特率*/
+    Serial.begin(9600);
+    
+    /*设置引脚模式*/
+    pinMode(gasInPin, INPUT);       //设置引脚为模拟输入模式
+    pinMode(LED_BUILTIN, OUTPUT);   // 设置板上LED引脚为输出模式
+    pinMode(pinRelay, OUTPUT);      // 设置板上继电器引脚为输出模式
+    Wire.begin(BH1750_SDA,BH1750_SCL);
+    
+    /*设置相关外设的信息*/
+    digitalWrite(LED_BUILTIN, HIGH);// 启动后关闭板上LED
+    digitalWrite(pinRelay, HIGH);   // 启动后关闭继电器
+    
+    /*wifiAP模式实现手机配网*/
+    WiFiManager wifiByPhone;
+    wifiByPhone.autoConnect("setWifiForESP","123456789");
+
+    /*如果WiFi已经连接好,设置mqtt服务器和回调函数*/
+    if(WiFi.status() == WL_CONNECTED){
+        WiFi.mode(WIFI_STA);
+        mqttClient.setServer(mqttServer,mqttPort);
+        mqttClient.setCallback(receiveCallback);
+        
+    }
+    connectMQTTserver();
+    ticker.attach(1, tickerCount);  
+}
+
+void loop() {
+    /* 如已连服务器,保持心跳*/
+    if (mqttClient.connected()) { 
+        mqttClient.loop();
+        dht->read(dhtPin);
+        lightIntensity = BH1750();
+    } 
+    /* 如未连服务器,重连服务器*/
+    else {                               
+        connectMQTTserver();
+    }
+}
+
+/*定时中断函数*/
+void tickerCount(){
+    count++;
+    /*每隔三秒发布一次消息,并且更新数据*/
+    if (count >= 4)
+    {
+        pubMQTTmsg();
+        count = 0;
+    }
+}
+
+
+// 连接MQTT服务器并订阅信息
+void connectMQTTserver(){
+  // 根据ESP8266的MAC地址生成客户端ID（避免与其它ESP8266的客户端ID重名）
+  String clientId = "esp8266-" + WiFi.macAddress();
+ 
+  // 连接MQTT服务器
+  if (mqttClient.connect(clientId.c_str())) { 
+    Serial.println(gasValue);
+    Serial.println("MQTT Server Connected.");
+    Serial.println("Server Address:");
+    Serial.println(mqttServer);
+    Serial.println("ClientId: ");
+    Serial.println(clientId);
+    subscribeTopic(); // 订阅指定主题
+  } else {
+    Serial.print("MQTT Server Connect Failed. Client State:");
+    Serial.println(mqttClient.state());
+    delay(5000);
+  }   
+}
+
+// 收到信息后的回调函数
+void receiveCallback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message Received [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println("");
+  Serial.print("Message Length(Bytes) ");
+  Serial.println(length);
+ 
+  if ((char)payload[0] == '1') {     // 如果收到的信息以“1”为开始
+    digitalWrite(BUILTIN_LED, LOW);  // 则点亮LED。
+      Serial.println("LED ON");
+    digitalWrite(pinRelay, LOW);
+  } else {                           
+   digitalWrite(BUILTIN_LED, HIGH);
+    Serial.println("LED ON");
+    digitalWrite(pinRelay, HIGH);
+    Serial.println("Relay OFF");
+  }
+}
+
+// 订阅指定主题
+void subscribeTopic(){
+  String topicString = "YPJSTF_control";
+  char subTopic[topicString.length() + 1];  
+  strcpy(subTopic, topicString.c_str());
+  
+  
+  // 通过串口监视器输出是否成功订阅主题1以及订阅的主题1名称
+  if(mqttClient.subscribe(subTopic)){
+    Serial.println(gasValue);
+    Serial.println("Subscrib Topic:");
+    Serial.println(subTopic);
+  } else {
+    Serial.print("Subscribe Fail...");
+  }  
+}
+
+// 发布信息
+void pubMQTTmsg(){
+  static int value; // 客户端发布信息用数字
+
+  // 建立发布主题。主题名称以Taichi-Maker-为前缀，后面添加设备的MAC地址。
+  // 这么做是为确保不同用户进行MQTT信息发布时，ESP8266客户端名称各不相同，
+  String topicString = "YPJSTF_infor";
+  char publishTopic[topicString.length() + 1];  
+  strcpy(publishTopic, topicString.c_str());
+
+  String messageString = String(dht->temperature)+ " " + String(dht->humidity) + " " + String(lightIntensity); 
+  char publishMsg[messageString.length() + 1];   
+  strcpy(publishMsg, messageString.c_str());
+  
+  // 实现ESP8266向主题发布信息
+  if(mqttClient.publish(publishTopic, publishMsg)){
+    Serial.println("Publish Topic:");Serial.println(publishTopic);
+    Serial.println("Publish message:");Serial.println(publishMsg);    
+  } else {
+    Serial.println("Message Publish Failed."); 
+  }
+}
+
+double BH1750() //BH1750设备操作
+{
+  int i=0;
+  double  val=0;
+  //开始I2C读写操作
+  Wire.beginTransmission(BH1750address);
+  Wire.write(0x10);//1lx reolution 120ms//发送命令
+  Wire.endTransmission();  
+  
+  delay(200);
+  //读取数据
+  Wire.beginTransmission(BH1750address);
+  Wire.requestFrom(BH1750address, 2);
+  while(Wire.available()) //
+  {
+    buff[i] = Wire.read();  // receive one byte
+    i++;
+  }
+  Wire.endTransmission();
+  if(2==i)
+  {
+   val=((buff[0]<<8)|buff[1])/1.2;
+  }
+  return val;
+}
